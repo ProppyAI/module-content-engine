@@ -1,7 +1,7 @@
 {
   "name": "content-engine",
-  "version": "1.0.0",
-  "description": "AI-powered content generation — images, videos, voiceovers, branded proposals and invoices",
+  "version": "2.0.0",
+  "description": "AI-powered content generation via Higgsfield Marketing Studio — images, 3D assets, video, UGC, ads, branded documents",
   "category": "content",
   "entities": {
     "produces": ["content-asset"],
@@ -9,9 +9,12 @@
     "extends": {}
   },
   "tools": [
-    { "name": "generate-image", "description": "Generate a branded image using NanoBanana Pro", "permissions": ["job:read", "client:read", "content-asset:write"] },
-    { "name": "generate-video", "description": "Generate a video using Seedance or Kling", "permissions": ["content-asset:read", "content-asset:write"] },
-    { "name": "generate-voiceover", "description": "Generate voice narration using CSM-1B", "permissions": ["content-asset:write"] },
+    { "name": "generate-image", "description": "Generate a branded image via Higgsfield NanoBanana", "permissions": ["job:read", "client:read", "content-asset:write"] },
+    { "name": "generate-video", "description": "Generate a video via Higgsfield SeedDance 2.0", "permissions": ["content-asset:read", "content-asset:write"] },
+    { "name": "generate-voiceover", "description": "Generate voice narration via Higgsfield", "permissions": ["content-asset:write"] },
+    { "name": "generate-3d-asset", "description": "Generate a 3D model or product render via NanoBanana", "permissions": ["job:read", "content-asset:write"] },
+    { "name": "generate-ugc", "description": "Generate UGC-style content — avatar + video via NanoBanana + SeedDance", "permissions": ["client:read", "job:read", "content-asset:write"] },
+    { "name": "generate-ad", "description": "Assemble a campaign-ready ad via Marketing Studio", "permissions": ["content-asset:read", "content-asset:write"] },
     { "name": "render-proposal", "description": "Render a branded proposal PDF from an estimate", "permissions": ["estimate:read", "client:read", "content-asset:write"] },
     { "name": "render-invoice", "description": "Render a branded invoice PDF", "permissions": ["client:read", "content-asset:write"] }
   ],
@@ -20,19 +23,21 @@
   ],
   "dependencies": [],
   "externalServices": [
-    { "name": "fal-ai", "required": false }
+    { "name": "higgsfield", "required": true, "type": "browser" }
   ],
   "config": {
-    "fal_model_image": { "type": "string", "default": "fal-ai/nano-banana-pro" },
-    "fal_model_video": { "type": "string", "default": "fal-ai/seedance-1-0-pro" },
-    "fal_model_voiceover": { "type": "string", "default": "fal-ai/csm-1b" },
+    "higgsfield_base_url": { "type": "string", "default": "https://studio.higgsfield.ai" },
+    "browser_connect_method": { "type": "string", "default": "persistent-context", "enum": ["persistent-context", "cdp"] },
+    "browser_data_dir": { "type": "string", "default": ".harness/browser-data" },
+    "asset_output_dir": { "type": "string", "default": ".harness/content-assets" },
+    "generation_timeout_seconds": { "type": "number", "default": 300 },
     "auto_generate_on_job_complete": { "type": "boolean", "default": true }
   },
   "agents": [
     {
       "name": "content-agent",
-      "description": "AI content generation — images, videos, documents",
-      "capabilities": ["image:generate", "video:generate", "document:render"]
+      "description": "AI content generation via Higgsfield — images, 3D, video, UGC, ads, documents",
+      "capabilities": ["image:generate", "video:generate", "3d:generate", "ugc:generate", "ad:generate", "document:render"]
     }
   ],
   "cron": []
