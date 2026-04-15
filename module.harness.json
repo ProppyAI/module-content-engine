@@ -1,0 +1,39 @@
+{
+  "name": "content-engine",
+  "version": "1.0.0",
+  "description": "AI-powered content generation — images, videos, voiceovers, branded proposals and invoices",
+  "category": "content",
+  "entities": {
+    "produces": ["content-asset"],
+    "consumes": ["client", "job", "estimate"],
+    "extends": {}
+  },
+  "tools": [
+    { "name": "generate-image", "description": "Generate a branded image using NanoBanana Pro", "permissions": ["job:read", "client:read", "content-asset:write"] },
+    { "name": "generate-video", "description": "Generate a video using Seedance or Kling", "permissions": ["content-asset:read", "content-asset:write"] },
+    { "name": "generate-voiceover", "description": "Generate voice narration using CSM-1B", "permissions": ["content-asset:write"] },
+    { "name": "render-proposal", "description": "Render a branded proposal PDF from an estimate", "permissions": ["estimate:read", "client:read", "content-asset:write"] },
+    { "name": "render-invoice", "description": "Render a branded invoice PDF", "permissions": ["client:read", "content-asset:write"] }
+  ],
+  "hooks": [
+    { "event": "PostJobCompleted", "action": "auto-generate-completion-photo", "type": "post" }
+  ],
+  "dependencies": [],
+  "externalServices": [
+    { "name": "fal-ai", "required": false }
+  ],
+  "config": {
+    "fal_model_image": { "type": "string", "default": "fal-ai/nano-banana-pro" },
+    "fal_model_video": { "type": "string", "default": "fal-ai/seedance-1-0-pro" },
+    "fal_model_voiceover": { "type": "string", "default": "fal-ai/csm-1b" },
+    "auto_generate_on_job_complete": { "type": "boolean", "default": true }
+  },
+  "agents": [
+    {
+      "name": "content-agent",
+      "description": "AI content generation — images, videos, documents",
+      "capabilities": ["image:generate", "video:generate", "document:render"]
+    }
+  ],
+  "cron": []
+}
